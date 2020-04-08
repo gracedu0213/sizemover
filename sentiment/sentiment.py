@@ -114,43 +114,42 @@ with tqdm(total=len(cik_df)) as pbar:
         pbar.update(1)
         loop_df = master_index_df[master_index_df['CIK'] == cik].sort_values(by=['Date Filed'], ascending=True)
         
-        if cik == 2488:
-            # We'll store the sfiled dates in a separate list for easier processing
-            date_list = []
-            sentiment_list = []
-            for index, row in loop_df.iterrows():
-                sentiment_score = 0.0
-                pos = 0.0
-                neg = 0.0
-                lit = 0.0
-                try:
-                    with open(input_directory + row['File'], 'r+', encoding = 'mbcs') as f:
-                        data = f.read().lower()
-                        
-                        date_list.append(row['Date Filed'])
-                        
-                        data_without_stop_words  = [word for word in re.split("\W+", data) if word not in stop_words and len(word) > 1]
-                        
-                        for word in data_without_stop_words:
-                            if word in positive_words:
-                                pos += 1.0
-                            if word in negative_words:
-                                neg += 1.0
-                            if word in litigious_words:
-                                lit += 1.0
-                        # Basic metric Relative Proportional Difference (between -1 and 1)
-                        if (pos+neg) != 0.0:
-                            sentiment_score = round((pos-neg) / (pos+neg), 4)
-                        else:
-                            sentiment_score = 0.0
-                except Exception as e:
-                    print(e)
-                sentiment_list.append(sentiment_score)
-    
-            sentiment_results_dict[str(cik)] = {dt:cs for (cs, dt) in zip(sentiment_list, date_list)}
-            
-            for cs, dt in zip(sentiment_list, date_list):
-                statsf.write(str(cik) + ',' + str(dt) + ',' + str(cs) +'\n')
+        # We'll store the sfiled dates in a separate list for easier processing
+        date_list = []
+        sentiment_list = []
+        for index, row in loop_df.iterrows():
+            sentiment_score = 0.0
+            pos = 0.0
+            neg = 0.0
+            lit = 0.0
+            try:
+                with open(input_directory + row['File'], 'r+', encoding = 'mbcs') as f:
+                    data = f.read().lower()
+                    
+                    date_list.append(row['Date Filed'])
+                    
+                    data_without_stop_words  = [word for word in re.split("\W+", data) if word not in stop_words and len(word) > 1]
+                    
+                    for word in data_without_stop_words:
+                        if word in positive_words:
+                            pos += 1.0
+                        if word in negative_words:
+                            neg += 1.0
+                        if word in litigious_words:
+                            lit += 1.0
+                    # Basic metric Relative Proportional Difference (between -1 and 1)
+                    if (pos+neg) != 0.0:
+                        sentiment_score = round((pos-neg) / (pos+neg), 4)
+                    else:
+                        sentiment_score = 0.0
+            except Exception as e:
+                print(e)
+            sentiment_list.append(sentiment_score)
+
+        sentiment_results_dict[str(cik)] = {dt:cs for (cs, dt) in zip(sentiment_list, date_list)}
+        
+        for cs, dt in zip(sentiment_list, date_list):
+            statsf.write(str(cik) + ',' + str(dt) + ',' + str(cs) +'\n')
 
 # Verify existence of output directory and create if not exists
 if not os.path.exists(output_directory):
