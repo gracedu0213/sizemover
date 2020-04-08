@@ -30,7 +30,7 @@ master_index_df = 'master_index/master_index_filtered.csv'
 dictionary_directory = './master_dictionary/'
 
 sentiment_stats_file = 'sentiment_stats.log'
-sentiment_json_file = 'sentiment_list_stats.json'
+sentiment_json_file = 'sentiment_stats.json'
 
 ###############################################################################
 # Re-using our code from cosine similarity
