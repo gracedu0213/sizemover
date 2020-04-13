@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Version x.0 dated 
+Version 1.0 dated 04-Apr-2020
 
 @author: Kim Criel and Taeyoung Park
 """
 
 import numpy as np
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.metrics import jaccard_score
 from sklearn.feature_extraction.text import TfidfVectorizer
 import os
 from tqdm import tqdm
 import json
-
 
 ###############################################################################
 # We are taking the output of the download_clean_10k script.
@@ -25,7 +22,6 @@ input_directory = './mda_extract/'
 output_directory = './results/'
 log_directory = './logs/'
 master_index_df = 'master_index/master_index_filtered.csv'
-# TODO generalize to similarity variables, variables also not named consistently
 cosine_stats_file = 'similarity_stats.log'
 cosine_json_file = 'similarity_stats.json'
 
@@ -45,10 +41,10 @@ def stemmer(data, enabled):
     else:
         stemmed_words = []
         words = word_tokenize(data)
-        stem_sentence=[]
+
         for word in words:
             stemmed_words.append(ps.stem(word))
-    
+
         return " ".join(stemmed_words)
 
 stemmer_enabled = False
@@ -79,14 +75,13 @@ mda_size_threshold = 2048
 # We did not opt to calculate the Jaccard similarity measure as the cosine one is better
 # Jaccard suffers from a bias towards longer document and not taking into account term frequency
 # Important remark here is that we are not stemming or cleaning the extracts
-# TODO run code with stemmer for comparison
+# Running the code with a stemmer didn't give any noticeable difference in the results
 
 # Include progress bar (tqdm library)
 with tqdm(total=len(cik_df)) as pbar:
     for cik in cik_df:
         pbar.update(1)
         loop_df = master_index_df[master_index_df['CIK'] == cik].sort_values(by=['Date Filed'], ascending=True)
-        
 
         tfidf_input = []
         # We'll store the size of the files and the filed dates in separate lists for easier processing
@@ -130,7 +125,7 @@ with tqdm(total=len(cik_df)) as pbar:
         # plt.show()
 
         cos_sim_results_dict[str(cik)] = {dt:cs for (cs, dt) in zip(cos_sim_corrected_result, date_list)}
-        
+
         for cs, dt in zip(cos_sim_corrected_result, date_list):
             statsf.write(str(cik) + ',' + str(dt) + ',' + str(cs) +'\n')
 

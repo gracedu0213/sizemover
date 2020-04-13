@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Version x.0 dated 
+Version 1.0 dated 7-Apr-2020
 
 @author: Kim Criel and Taeyoung Park
 """
@@ -8,12 +8,11 @@ Version x.0 dated
 import edgar
 import glob
 import pandas as pd
-from zipfile import ZipFile 
+from zipfile import ZipFile
 
 ###############################################################################
 # Download master index of SEC EDGAR since 1999. No need to do this everytime,but once
 # Documentation of library: https://pypi.org/project/python-edgar/
-# Run the following from a prompt (running in the IDE took ages - in a prompt instantaneously)
 
 edgar_dir = './master_index/'
 edgar_since_year = 1999
@@ -57,11 +56,11 @@ for index in edgar_index:
     edgar_df = pd.concat([edgar_df, qtr_df])
     number_of_rows += qtr_df.shape[0]
 edgar_archive.close()
-    
+
 print('Total number of entries in filtered master index: ', number_of_rows)
 
 # Turned out to be very manageable in size (from 2+GB to 20 MB)
-# compression_opts = dict(method = 'zip', archive_name = 'edgar_index_10k.csv')  
+# compression_opts = dict(method = 'zip', archive_name = 'edgar_index_10k.csv')
 # edgar_df.to_csv('edgar_index_10k.zip', index = False, compression=compression_opts)
 edgar_df.to_csv(edgar_dir + 'edgar_index_10k.csv', index = False)
 

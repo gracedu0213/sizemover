@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Version x.0 dated 
+Version 1.0 dated 31-Mar-2020
 
 @author: Kim Criel and Taeyoung Park
 """
@@ -27,35 +27,34 @@ output_directory = './edgar_download/'
     # chunk parameter: which section of the download list get processed
     # chunk total parameter: total number of chunks
 
-
 def dl_clean_10k(df, dl_dir, chunk, chunk_total):
-    
+
     # Add log file for incomplete downloads and/or other messages
     log_file = 'dl_error' + str(chunk) + '.log'
-    
+
     # Read in master index and append target CIK subdirectory and file
     master_index_df = pd.read_csv(df, sep = ',')
     master_index_df['File'] = master_index_df['TXT'].str.split('/', expand = True)[6] + '/' + master_index_df['TXT'].str.split('/', expand = True)[7]
 
     # Logic to chunk the master index into different ranges
     range_len = int(round(int(master_index_df.shape[0]) / int(chunk_total), 0))
-    
+
     df_range_start = (chunk-1) * range_len
     if chunk == chunk_total:
         df_range_end = int(master_index_df.shape[0]) + 1
     else:
         df_range_end = chunk * range_len
     # print(df_range_start, df_range_end)
-    
+
     master_index_df = master_index_df[df_range_start:df_range_end]
-    
-    
+
+
     # Verify existence of output directory and create if not exists
     if not os.path.exists(dl_dir):
         os.makedirs(dl_dir)
-    
+
     logf = open(log_file, "w")
-    
+
     for index, row in master_index_df.iterrows():
         if os.path.isfile(output_directory  + row['File']):
             # print('File exists: {0}'.format(str(row['File'])))
@@ -66,12 +65,12 @@ def dl_clean_10k(df, dl_dir, chunk, chunk_total):
                 link_dir = output_directory + str(row['CIK'])  + '/'
                 if not os.path.exists(link_dir):
                     os.makedirs(link_dir)
-                
+
                 link = wget.download(row['TXT'], out = link_dir)
-                
+
                 with open(link, 'r+') as f:
                     data = f.read()
-                    
+
                     f.seek(0)
                     # The following line will remove inline spreadsheets, images and so on
                     # Aim is to reduce file size drastically here (10-K reports can easily be tens to hundreds of MB in size)
@@ -89,11 +88,11 @@ def dl_clean_10k(df, dl_dir, chunk, chunk_total):
                     data = re.sub('[^0-9a-zA-Z][\s\t]+?&-\/\'', '', data)
                     data = re.sub('&#\d*;','', data)
                     data = re.sub('\n\s*\n','\n', data)
-                    
+
                     f.truncate()
                     f.write(data)
                     f.close()
-                
+
             except Exception as e:
                 # print('Failed to download {0}: {1}\n'.format(str(row['File']), str(e))
                 logf.write('Failed to download {0}: {1}\n'.format(str(row['File']), str(e)))
@@ -130,7 +129,7 @@ if __name__ == '__main__':
         process = multiprocessing.Process(target=dl_clean_10k, args=(master_index_df, output_directory, index+1, concurrent_processes,))
         processes.append(process)
         process.start()
-    
+
     for process in processes:
         process.join()
 

@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Version x.0 dated 
+Version 1.0 dated 31-Mar-2020
 
 @author: Kim Criel and Taeyoung Park
 """
 
-import numpy as np
 import pandas as pd
 
-
 ###############################################################################
-
-# TODO Define variables of download and result directories
 output_directory = './master_dictionary/'
 
+# Loughran & McDonald dictionaries for financial applications
 # Obtain from https://sraf.nd.edu/textual-analysis/resources/
 master_dict_raw = 'LoughranMcDonald_MasterDictionary_2018.csv'
 stop_word_raw = 'StopWords_Generic.txt'
 
 ###############################################################################
-
-       
 def read_csv(filename, header='infer'):
     return pd.read_csv(filename, sep = ",", header = header)
 
