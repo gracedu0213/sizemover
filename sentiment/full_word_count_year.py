@@ -11,6 +11,8 @@ from tqdm import tqdm
 import json
 import csv
 import re
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
 
 ###############################################################################
 # We are taking the output of the download_clean_10k script.
@@ -21,8 +23,8 @@ log_directory = './logs/'
 master_index_df = 'master_index/master_index_filtered.csv'
 dictionary_directory = './master_dictionary/'
 
-word_count_stats_file = 'word_count_year_stats.log'
-word_count_json_file = 'word_count_year_stats.json'
+word_count_stats_file = 'full_word_count_year_stats.log'
+word_count_json_file = 'full_word_count_year_stats.json'
 
 ###############################################################################
 # Re-using our code from cosine similarity
@@ -103,27 +105,30 @@ with tqdm(total=len(master_index_df)) as pbar:
         loop_df = master_index_df[master_index_df['Date Filed'].str[:4] == year]
 
         word_count_dict = {}
+        corpus = []
 
         for index, row in loop_df.iterrows():
             pbar.update(1)
             try:
                 with open(input_directory + row['File'], 'r+', encoding = 'mbcs') as f:
                     data = f.read().lower()
-
-                    data_without_stop_words  = [word for word in re.split("\W+", data) if word not in stop_words and len(word) > 1]
-
-                    for word in data_without_stop_words:
-                        if word in consolidated_words:
-                            if word_count_dict.get(word) != None:
-                                word_count_dict[word] += 1
-                            else:
-                                word_count_dict[word] = 1
+                    # Had some strange results coming from the MD&A formatting, removing underscores explicitly
+                    corpus.append(re.sub('_', '', data))
             except Exception as e:
                 print(e)
 
-        word_count_results_dict[str(year)] = word_count_dict
+        # We change the vectorizer to take three-letter words
+        vectorizer = CountVectorizer(stop_words=stop_words, token_pattern=r'(?u)\b\w\w\w+\b')
+        X = vectorizer.fit_transform(corpus)
+        # The output of the vectorizer is a matrix with rows corresponding to the corpus and columns to the words
+        # We need to reduce this to a list to match with the feature names (so a sum of the rows and then a squeeze to make it a list)
+        count_words = np.squeeze(np.array(np.sum(X, axis=0)))
+        features = vectorizer.get_feature_names()
 
-        for k, v in word_count_dict.items():
+        # Finally we create our dictionaries for flat file and JSON output
+        word_count_results_dict[str(year)] = {ft:int(cw) for (ft, cw) in zip(features, count_words)}
+
+        for k, v in word_count_results_dict[str(year)].items():
             statsf.write(str(year) + ',' + str(k) + ',' + str(v) +'\n')
 
 # Verify existence of output directory and create if not exists

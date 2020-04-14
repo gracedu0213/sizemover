@@ -21,8 +21,8 @@ log_directory = './logs/'
 master_index_df = 'master_index/master_index_filtered.csv'
 dictionary_directory = './master_dictionary/'
 
-word_count_stats_file = 'word_count_cik_stats.log'
-word_count_json_file = 'word_count_cik_stats.json'
+word_count_stats_file = 'financial_word_count_year_stats.log'
+word_count_json_file = 'financial_word_count_year_stats.json'
 
 ###############################################################################
 # Re-using our code from cosine similarity
@@ -87,7 +87,7 @@ if not os.path.exists(log_directory):
 statsf = open(log_directory + word_count_stats_file, 'w')
 sentiment_results_dict = {}
 
-cik_df = master_index_df['CIK'].unique()
+year_df = master_index_df['Date Filed'].str[:4].unique()
 
 # Not all MD&A reports can be extracted corrctly or sometimes refer to obscure page numbering (that afterwards gets lost in the way the original file is stored)
 # We found that below 2 KB we have this behaviour consistently
@@ -98,10 +98,9 @@ consolidated_words = positive_words + negative_words + litigious_words
 word_count_results_dict = {}
 
 # Include progress bar (tqdm library)
-with tqdm(total=len(cik_df)) as pbar:
-    for cik in cik_df:
-        pbar.update(1)
-        loop_df = master_index_df[master_index_df['CIK'] == cik].sort_values(by=['Date Filed'], ascending=True)
+with tqdm(total=len(master_index_df)) as pbar:
+    for year in year_df:
+        loop_df = master_index_df[master_index_df['Date Filed'].str[:4] == year]
 
         word_count_dict = {}
 
@@ -122,10 +121,10 @@ with tqdm(total=len(cik_df)) as pbar:
             except Exception as e:
                 print(e)
 
-        word_count_results_dict[str(cik)] = word_count_dict
+        word_count_results_dict[str(year)] = word_count_dict
 
         for k, v in word_count_dict.items():
-            statsf.write(str(cik) + ',' + str(k) + ',' + str(v) +'\n')
+            statsf.write(str(year) + ',' + str(k) + ',' + str(v) +'\n')
 
 # Verify existence of output directory and create if not exists
 if not os.path.exists(output_directory):
