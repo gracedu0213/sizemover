@@ -3,6 +3,8 @@
 Version 1.0 dated 04-Apr-2020
 
 @author: Kim Criel and Taeyoung Park
+
+This script will calculate the change of language in the MD&A sections (comparing one year to the next) and the output is stored in a JSON format containing a nested structure of data and score per Central Index Key. The equivalent is also stored in a log file in logs/, whereas in results/ you can find the JSON file.
 """
 
 import numpy as np

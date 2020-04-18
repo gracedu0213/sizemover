@@ -3,6 +3,8 @@
 Version 1.0 dated 13-Apr-2020
 
 @author: Kim Criel and Taeyoung Park
+
+This script computes the full word count per Central Index Key in a JSON format for visualization.
 """
 
 import pandas as pd

@@ -3,13 +3,15 @@
 Version 1.0 dated 12-Apr-2020
 
 @author: Kim Criel and Taeyoung Park
+
+This script appends the similarity and polarity scores to the original dataset for further processing in the clustering algorithms.
 """
 
 import pandas as pd
 import json
 
 ###############################################################################
-data_dir = '../../Data/'
+data_dir = '../data/'
 results_dir = './results/'
 
 monthly_file = data_dir + 'NA_Ret_Data_Clean_v1.xlsx'

@@ -3,6 +3,8 @@
 Version 1.0 dated 04-Apr-2020
 
 @author: Kim Criel and Taeyoung Park
+
+This script calculates the polarity for each MD&A section and stores its results in logs/ and results/ in a log and JSON file respectively.
 """
 
 import pandas as pd

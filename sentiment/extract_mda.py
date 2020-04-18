@@ -3,6 +3,8 @@
 Version 1.0 dated 12-Apr-2014
 
 @author: Kim Criel and Taeyoung Park
+
+This script takes the semi-pre-processed download and extract the MD&A section. The results are stored in mda_extract/ for further processing. Parallelized version of the script is also available.
 """
 
 import pandas as pd

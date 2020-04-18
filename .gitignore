@@ -1,3 +1,6 @@
 
 sentiment/master_index/master_index.zip
 sentiment/logs/signal_comparison.xlsx
+.DS_Store
+data/
+visualization/

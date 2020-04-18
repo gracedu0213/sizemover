@@ -3,6 +3,8 @@
 Version 1.0 dated 31-Mar-2020
 
 @author: Kim Criel and Taeyoung Park
+
+This script downloads the annual reports and already filters out the binary files along with cleaning up the data structure in the raw text files. Unprocessed download size is 500 GB. We ran this particular script on multiple Azure Data Science Virtual Machines. The script already contains process parallelization to facilitate the download. The result is stored in download/ and has one folder per Central Index Key (company).
 """
 
 import pandas as pd

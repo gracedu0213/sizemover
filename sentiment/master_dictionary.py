@@ -3,6 +3,8 @@
 Version 1.0 dated 31-Mar-2020
 
 @author: Kim Criel and Taeyoung Park
+
+Before running this script, the dictionaries need to be retrieved from https://sraf.nd.edu/textual-analysis/resources/ - we need both the 2018 Master Dictionary in csv format and the Generic Stop Words file in txt format. This script will extract positive, negative, litigious and stop words and store the files in master_dictionary/ for subsequent steps.
 """
 
 import pandas as pd
